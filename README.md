@@ -87,7 +87,7 @@ const {config, argv} = parse(process.argv.slice(2))
 
 ## API
 
-### `cliEnvConfig(configDefs: ConfigDef): ConfigParseFunction`
+### `cliEnvConfig(configDefs: ConfigDef) => ConfigParseFunction`
 
 Return a function that parses an argv array and returns the
 config object and sets environment variables.
