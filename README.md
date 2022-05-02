@@ -1,4 +1,4 @@
-# cli-env-config
+# @isaacs/cli-env-config
 
 An options parser for environment variable configuration.
 
