@@ -10,7 +10,7 @@ t.test('basics', t => {
   const confDef: ConfigDef = {
     env,
     prefix: 'TEST_APP',
-    options: ['api', 'foo', ['bar', 'b']],
+    options: ['api', 'foo', ['bar', 'b'], 'css-opt', 'camelOpt'],
     switches: ['camelCase', ['debug', 'd']],
     switchInverts: [['noDebug', 'debug', 'D']],
     counts: [['inc', 'i']],
@@ -33,6 +33,20 @@ t.test('basics', t => {
       TEST_APP_API: 'apival',
       TEST_APP_FOO: 'fooval',
       TEST_APP_BAR: '',
+    })
+    t.end()
+  })
+
+  t.test('set a camel-case option', t => {
+    const { config, argv } = parse([
+      '--css-opt=asdf',
+      '--camelOpt=only a model',
+    ])
+    t.strictSame(config, {cssOpt: 'asdf', camelOpt: 'only a model' })
+    t.strictSame(argv, [])
+    t.strictSame(env, {
+      TEST_APP_CSS_OPT: 'asdf',
+      TEST_APP_CAMEL_OPT: 'only a model',
     })
     t.end()
   })

@@ -62,7 +62,12 @@ const parse = cliEnvConfig({
   switches: ['camelCase', ['debug', 'd'], ['help', 'h']],
   // switch inverts make a switch be turned off
   // they don't end up on the config object
-  switchInverts: [['noDebug', 'debug', 'D']],
+  //
+  // And because I can never remember whether these sorts of
+  // things need to be camel or css case, either works, but it's
+  // always css-case in the cli, and always camelCase in the
+  // config obj, obviously.
+  switchInverts: [['no-debug', 'debug', 'D']],
 
   // these are set to the number of times they're specified
   counts: [['verbose', 'v']],

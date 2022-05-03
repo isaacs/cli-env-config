@@ -90,18 +90,23 @@ const toNegSet = (
 }
 
 const snakeToCamel = (snake: string): string =>
-  snake.toLowerCase().replace(/_(.)/g, ($0, $1) => $1.toUpperCase())
+  snake.toLowerCase().replace(/_(.)/g, (_, $1) => $1.toUpperCase())
 
 const snakeToCSS = (snake: string): string =>
   snake.toLowerCase().replace(/_/g, '-')
 
 const camelToLoudSnake = (camel: string): string =>
+  camelToCSS(camel).replace(/-/g, '_').toUpperCase()
+
+const camelToCSS = (camel: string): string =>
   camel
-    .replace(/([^a-z])([A-Z]+)/g, ($0, $1, $2) => $1 + '_' + $2)
-    .toUpperCase()
+    .replace(/([^A-Z])([A-Z]+)/g, (_, $1, $2) => $1 + '-' + $2)
+    .toLowerCase()
 
 const cssToCamel = (css: string): string =>
-  css.toLowerCase().replace(/-(.)/g, ($0, $1) => $1.toUpperCase())
+  camelToLoudSnake(css)
+    .toLowerCase()
+    .replace(/[_-](.)/g, (_, $1) => $1.toUpperCase())
 
 const readEnv = (
   env: { [k: string]: string } | ProcessEnv,
@@ -140,7 +145,7 @@ const getNum = (
   return typeof config[ck] === 'number'
     ? (config[ck] as number)
     : typeof env[ek] === 'string'
-    /* c8 ignore next */? parseInt(env[ek] as string)
+    ? /* c8 ignore next */ parseInt(env[ek] as string)
     : 0
 }
 
@@ -214,9 +219,7 @@ export const cliEnvConfig = (
   const handleNegSwitch = (config: ResultConfig, k: string): void => {
     env[envKey(k)] = '0'
     if (k === 'debug' && env.NODE_DEBUG) {
-      const ds = new Set(
-        env.NODE_DEBUG.split(',').filter(f => !!f)
-      )
+      const ds = new Set(env.NODE_DEBUG.split(',').filter(f => !!f))
       ds.delete(snakeToCSS(prefix))
       env.NODE_DEBUG = [...ds].join(',')
     }
