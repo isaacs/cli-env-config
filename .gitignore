@@ -21,3 +21,4 @@
 !/.gitattributes
 !/coverage-map.js
 !/map.js
+!/tsconfig.json
