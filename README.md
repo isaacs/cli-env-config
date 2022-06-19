@@ -41,6 +41,8 @@ npm install cli-env-config
 
 ## USAGE
 
+Big illustrative example with all the fixins:
+
 ```js
 const { cliEnvConfig } = require('cli-env-config')
 
@@ -87,7 +89,40 @@ const parse = cliEnvConfig({
 // options is the resolved values
 const {config, argv} = parse(process.argv.slice(2))
 
-// then you can use the config object and the argv to do whatever
+// then you can use the config object and the argv to do
+// whatever, or just code against the process.env values.
+```
+
+More minimal/realistic example:
+
+```js
+// create the parser
+import { cliEnvConfig } from '@isaacs/cli-env-config'
+const parseArgv = cliEnvConfig({
+  prefix: 'MY_APP',
+  options: [['apiUrl', 'a'], ['webUrl', 'w'], ['key', 'k'], 'authType'],
+  switches: [
+    ['debug', 'd'],
+    ['help', 'h'],
+  ],
+  switchInverts: [['noDebug', 'debug', 'D']],
+})
+
+
+const main = () => {
+  // use it
+  const {argv, config} = parseArgv(process.argv.slice(2))
+  if (config.help) {
+    return console.log('Usage: myapp <thing|other> [options]')
+  }
+  const cmd = argv.shift()
+  switch (cmd) {
+    case 'thing': return doThing(argv, config)
+    case 'other': return doOther(argv, config)
+    default: throw `Unknown command: ${cmd}`
+  }
+}
+main()
 ```
 
 ## API

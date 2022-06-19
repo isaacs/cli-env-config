@@ -121,7 +121,7 @@ const readEnv = (
     env as { [k: string]: string }
   )) {
     if (k.toUpperCase().startsWith(prefix.toUpperCase() + '_')) {
-      const key = snakeToCamel(k.substr(prefix.length + 1))
+      const key = snakeToCamel(k.substring(prefix.length + 1))
       if (options.has(key)) {
         conf[key] = v
       } else if (switches.has(key) && (v === '0' || v === '1')) {
