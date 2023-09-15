@@ -6,7 +6,6 @@
     "sourceMap": true,
     "target": "ES6",
     "importHelpers": true,
-    "module": "ES2022",
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "esModuleInterop": true,

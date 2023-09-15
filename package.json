@@ -21,7 +21,8 @@
     "presnap": "tsc",
     "preversion": "npm test",
     "postversion": "npm publish",
-    "prepublishOnly": "git push origin --follow-tags"
+    "prepublishOnly": "git push origin --follow-tags",
+    "typedoc": "typedoc"
   },
   "prettier": {
     "semi": false,
@@ -51,6 +52,7 @@
     "tap": "^16.0.1",
     "ts-node": "^10.7.0",
     "tslib": "^2.4.0",
+    "typedoc": "^0.25.1",
     "typescript": "^4.6.4"
   },
   "engines": {
