@@ -1,6 +1,6 @@
 {
   "name": "@isaacs/cli-env-config",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "./dist/commonjs/index.js",
   "files": [
     "dist"
