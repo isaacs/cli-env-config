@@ -1,6 +1,6 @@
 import t from 'tap'
-import { cliEnvConfig } from '../'
-import type { ConfigDef } from '../'
+import { cliEnvConfig } from '@isaacs/cli-env-config'
+import type { ConfigDef } from '@isaacs/cli-env-config'
 
 t.test('basics', t => {
   const env = {} as { [k: string]: string }
@@ -42,7 +42,7 @@ t.test('basics', t => {
       '--css-opt=asdf',
       '--camelOpt=only a model',
     ])
-    t.strictSame(config, {cssOpt: 'asdf', camelOpt: 'only a model' })
+    t.strictSame(config, { cssOpt: 'asdf', camelOpt: 'only a model' })
     t.strictSame(argv, [])
     t.strictSame(env, {
       TEST_APP_CSS_OPT: 'asdf',
@@ -173,10 +173,35 @@ t.test('basics', t => {
 
 t.test('invalid config definitions', t => {
   t.throws(() => cliEnvConfig({ options: ['foo', 'foo'], prefix: 'x' }))
-  t.throws(() => cliEnvConfig({ options: [['foo', 'f'], ['far', 'f']], prefix: 'x' }))
-  t.throws(() => cliEnvConfig({ switchInverts: [['asdf', 'foo']], prefix: 'x' }))
-  t.throws(() => cliEnvConfig({ countInverts: [['asdf', 'foo']], prefix: 'x' }))
-  t.throws(() => cliEnvConfig({ counts: [['asdf', 'a']], countInverts: [['fdsa', 'asdf', 'a']], prefix: 'x' }))
-  t.throws(() => cliEnvConfig({ options: ['fdsa'], counts: [['asdf', 'a']], countInverts: [['fdsa', 'asdf']], prefix: 'x' }))
+  t.throws(() =>
+    cliEnvConfig({
+      options: [
+        ['foo', 'f'],
+        ['far', 'f'],
+      ],
+      prefix: 'x',
+    }),
+  )
+  t.throws(() =>
+    cliEnvConfig({ switchInverts: [['asdf', 'foo']], prefix: 'x' }),
+  )
+  t.throws(() =>
+    cliEnvConfig({ countInverts: [['asdf', 'foo']], prefix: 'x' }),
+  )
+  t.throws(() =>
+    cliEnvConfig({
+      counts: [['asdf', 'a']],
+      countInverts: [['fdsa', 'asdf', 'a']],
+      prefix: 'x',
+    }),
+  )
+  t.throws(() =>
+    cliEnvConfig({
+      options: ['fdsa'],
+      counts: [['asdf', 'a']],
+      countInverts: [['fdsa', 'asdf']],
+      prefix: 'x',
+    }),
+  )
   t.end()
 })

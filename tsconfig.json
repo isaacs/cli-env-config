@@ -1,20 +1,18 @@
 {
-  "exclude": ["./test", "./tap-snapshots"],
-  "include": ["src/**/*.ts"],
   "compilerOptions": {
     "declaration": true,
-    "sourceMap": true,
-    "target": "ES6",
-    "importHelpers": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+    "declarationMap": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "module": "CommonJS",
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": true,
+    "jsx": "react",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
-    "strict": true,
     "skipLibCheck": true,
-    "outDir": "lib",
-    "allowSyntheticDefaultImports": true
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2022"
   }
 }

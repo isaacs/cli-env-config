@@ -108,18 +108,20 @@ const parseArgv = cliEnvConfig({
   switchInverts: [['noDebug', 'debug', 'D']],
 })
 
-
 const main = () => {
   // use it
-  const {argv, config} = parseArgv(process.argv.slice(2))
+  const { argv, config } = parseArgv(process.argv.slice(2))
   if (config.help) {
     return console.log('Usage: myapp <thing|other> [options]')
   }
   const cmd = argv.shift()
   switch (cmd) {
-    case 'thing': return doThing(argv, config)
-    case 'other': return doOther(argv, config)
-    default: throw `Unknown command: ${cmd}`
+    case 'thing':
+      return doThing(argv, config)
+    case 'other':
+      return doOther(argv, config)
+    default:
+      throw `Unknown command: ${cmd}`
   }
 }
 main()
@@ -134,29 +136,29 @@ config object and sets environment variables.
 
 ### `ConfigDef` type
 
-* `prefix` The name of your app.  Required.
-* `options`: Array of option name strings or `[name, shortFlag]`
-  tuples.  These keys must take a value.
-* `switches`: Array of switch name strings or `[name, shortFlag]`
-  tuples.  These keys must not take a value, they are true if
+- `prefix` The name of your app. Required.
+- `options`: Array of option name strings or `[name, shortFlag]`
+  tuples. These keys must take a value.
+- `switches`: Array of switch name strings or `[name, shortFlag]`
+  tuples. These keys must not take a value, they are true if
   set.
-* `switchInverts`: Array of `[name, target]` or `[name, target,
-  shortFlag]` tuples.  The `target` is a `switch` that this
+- `switchInverts`: Array of `[name, target]` or `[name, target,
+shortFlag]` tuples. The `target` is a `switch` that this
   switch sets to `false`.
-* `counts`: Array of counter name strings or `[name, shortFlag]`
-  tuples.  These may be set multiple times, each time increments
+- `counts`: Array of counter name strings or `[name, shortFlag]`
+  tuples. These may be set multiple times, each time increments
   the counter.
-* `countInverts`: Array of `[name, target]` or `[name, target,
-  shortFlag]` tuples.  The `target` is a `count` that this switch
+- `countInverts`: Array of `[name, target]` or `[name, target,
+shortFlag]` tuples. The `target` is a `count` that this switch
   decrements.
-* `multivars`: Array of multivar name strings or `[name,
-  shortFlag]` tuples.  These take a value, and may be set
-  multiple times.  The resulting value is an array of all values
+- `multivars`: Array of multivar name strings or `[name,
+shortFlag]` tuples. These take a value, and may be set
+  multiple times. The resulting value is an array of all values
   provided.
-* `allowUnknown`: Boolean, default false.  Treats unrecognized
+- `allowUnknown`: Boolean, default false. Treats unrecognized
   `-flag` and `--option` arguments as positionals, including them
   in the returned `argv`
-* `env`: The environment object to use, defaults to `process.env`
+- `env`: The environment object to use, defaults to `process.env`
 
 ### `ConfigParseFunction`
 
@@ -171,25 +173,25 @@ the returned `argv`.
 Sets all environment variables appropriately in the `env` object
 provided in the `ConfigDef` to `cliEnvConfig()`.
 
-Throws if the argv cannot be parsed correctly.  (For example, if
+Throws if the argv cannot be parsed correctly. (For example, if
 a value is provided to a `switch` type argument, or no value is
 provided to an `option` type argument.)
 
 ### Option Types
 
-* `option` Value must be provided.  Uses the last value
-  specified.  Stored in the environment as the last string value.
+- `option` Value must be provided. Uses the last value
+  specified. Stored in the environment as the last string value.
   Set to an empty string with `--name=`.
-* `switch` Value must not be provided.  Boolean, set true by
+- `switch` Value must not be provided. Boolean, set true by
   setting the option, or set false with a `switchInvert`
-  argument.  Stored in the environment as `'1'` for true and
+  argument. Stored in the environment as `'1'` for true and
   `'0'` for false.
-* `count` Value must not be provided, may be specified multiple
-  times.  Integer, incremented by setting the option, or
-  decremented by a `countInvert` argument.  Set in the
+- `count` Value must not be provided, may be specified multiple
+  times. Integer, incremented by setting the option, or
+  decremented by a `countInvert` argument. Set in the
   environment as a decimal string.
-* `multivar` Value must be provided, may be specified multiple
-  times.  Array of all string values provided.  Set in the
+- `multivar` Value must be provided, may be specified multiple
+  times. Array of all string values provided. Set in the
   environment as a `\n\n`-delimited list of all values provided.
 
 ## WHY

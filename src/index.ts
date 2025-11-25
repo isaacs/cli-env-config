@@ -1,7 +1,5 @@
 export type KeyList = Array<string | [string, string]>
-export type NegList = Array<
-  [string, string] | [string, string, string]
->
+export type NegList = Array<[string, string] | [string, string, string]>
 
 type ProcessEnv = typeof process.env
 
@@ -33,21 +31,20 @@ const undef = (x: any): x is undefined => typeof x === 'undefined'
 const toOptSet = (
   a: Array<string | [string, string]>,
   s: Map<string, string>,
-  allKeys: Set<string>
+  allKeys: Set<string>,
 ): Set<string> => {
   const ret = new Set<string>()
   for (const opt of a) {
-    const o = typeof opt === 'string' ? [opt] : opt
+    const o: [string] | [string, string] =
+      typeof opt === 'string' ? [opt] : opt
     const [key, flag] = o
     if (allKeys.has(key)) {
       throw new Error(`duplicate definition for option ${key}`)
     }
     allKeys.add(key)
-    if (s.has(flag)) {
+    if (!!flag && s.has(flag)) {
       throw new Error(
-        `duplication definition for ${flag} -> ${s.get(
-          flag
-        )} and ${key}`
+        `duplication definition for ${flag} -> ${s.get(flag)} and ${key}`,
       )
     }
     ret.add(key)
@@ -61,7 +58,7 @@ const toOptSet = (
 const toNegSet = (
   a: Array<[string, string, string] | [string, string]>,
   s: Map<string, string>,
-  allKeys: Set<string>
+  allKeys: Set<string>,
 ): Map<string, string> => {
   const ret = new Map<string, string>()
   for (const opt of a) {
@@ -70,15 +67,11 @@ const toNegSet = (
       throw new Error(`duplicate definition for option ${neg}`)
     }
     if (!allKeys.has(target)) {
-      throw new Error(
-        `negation target doesn't exist: ${neg}=>${target}`
-      )
+      throw new Error(`negation target doesn't exist: ${neg}=>${target}`)
     }
     if (!undef(flag) && s.has(flag)) {
       throw new Error(
-        `duplicate definition for ${flag} -> ${s.get(
-          flag
-        )} and ${neg}`
+        `duplicate definition for ${flag} -> ${s.get(flag)} and ${neg}`,
       )
     }
     ret.set(neg, target)
@@ -114,12 +107,10 @@ const readEnv = (
   options: Set<string>,
   switches: Set<string>,
   counts: Set<string>,
-  multivars: Set<string>
+  multivars: Set<string>,
 ): ResultConfig => {
   const conf: ResultConfig = {}
-  for (const [k, v] of Object.entries(
-    env as { [k: string]: string }
-  )) {
+  for (const [k, v] of Object.entries(env as { [k: string]: string })) {
     if (k.toUpperCase().startsWith(prefix.toUpperCase() + '_')) {
       const key = snakeToCamel(k.substring(prefix.length + 1))
       if (options.has(key)) {
@@ -140,18 +131,18 @@ const getNum = (
   config: { [k: string]: any },
   ck: string,
   env: { [k: string]: string } | ProcessEnv,
-  ek: string
+  ek: string,
 ): number => {
-  return typeof config[ck] === 'number'
-    ? (config[ck] as number)
-    : typeof env[ek] === 'string'
-    ? /* c8 ignore next */ parseInt(env[ek] as string)
-    : 0
+  return (
+    typeof config[ck] === 'number' ? (config[ck] as number)
+    : /* c8 ignore start */
+    typeof env[ek] === 'string' ? parseInt(env[ek] as string)
+    : /* c8 ignore stop */
+      0
+  )
 }
 
-export const cliEnvConfig = (
-  confDef: ConfigDef
-): ConfigParseFunction => {
+export const cliEnvConfig = (confDef: ConfigDef): ConfigParseFunction => {
   const shorts = new Map<string, string>()
   const allKeys = new Set<string>()
   const options = toOptSet(confDef.options || [], shorts, allKeys)
@@ -161,22 +152,21 @@ export const cliEnvConfig = (
   const countInverts = toNegSet(
     confDef.countInverts || [],
     shorts,
-    allKeys
+    allKeys,
   )
   const switchInverts = toNegSet(
     /* c8 ignore next */ confDef.switchInverts || [],
     shorts,
-    allKeys
+    allKeys,
   )
   const { prefix, env = process.env, allowUnknown = false } = confDef
 
-  const envKey = (k: string): string =>
-    prefix + '_' + camelToLoudSnake(k)
+  const envKey = (k: string): string => prefix + '_' + camelToLoudSnake(k)
 
   const handleOption = (
     config: ResultConfig,
     k: string,
-    val: string
+    val: string,
   ): void => {
     env[envKey(k)] = val
     config[cssToCamel(k)] = val
@@ -186,7 +176,7 @@ export const cliEnvConfig = (
     env[envKey(k)] = '1'
     if (k === 'debug') {
       const ds = new Set(
-        (env.NODE_DEBUG || '').split(',').filter(f => !!f)
+        (env.NODE_DEBUG || '').split(',').filter(f => !!f),
       )
       ds.add(snakeToCSS(prefix))
       env.NODE_DEBUG = [...ds].join(',')
@@ -197,7 +187,7 @@ export const cliEnvConfig = (
   const handleMultivar = (
     config: ResultConfig,
     k: string,
-    val: string
+    val: string,
   ): void => {
     const ek = envKey(k)
     const curEnv = env[ek] || ''
@@ -241,17 +231,19 @@ export const cliEnvConfig = (
       options,
       switches,
       counts,
-      multivars
+      multivars,
     )
     const argv: string[] = []
 
     for (let i = 0; i < input.length; i++) {
-      const arg = input[i]
+      const arg = String(input[i])
       if (arg === '--') {
         argv.push(...input.slice(i))
         return { config, argv }
       }
-      const m = arg.match(/^--([^=]+)(?:=(.*))?$|^-([^ ]+)$/)
+      const m = arg.match(/^--([^=]+)(?:=(.*))?$|^-([^ ]+)$/) as
+        | null
+        | (RegExpMatchArray & [string, string, string, string])
 
       // positional
       if (!m) {
@@ -268,10 +260,13 @@ export const cliEnvConfig = (
           switches.has(k) ||
           switchInverts.has(k) ||
           countInverts.has(k)
-        const val = needVal ? (undef(v) ? input[++i] : v) : v
+        const val =
+          needVal ?
+            undef(v) ? input[++i]
+            : v
+          : v
         const invalid =
-          (known && !needVal && !undef(val)) ||
-          (needVal && undef(val))
+          (known && !needVal && !undef(val)) || (needVal && undef(val))
 
         if (invalid) {
           throw new Error(`invalid option: ${arg} in ${input}`)
@@ -287,11 +282,11 @@ export const cliEnvConfig = (
         }
 
         if (options.has(k)) {
-          handleOption(config, k, val)
+          handleOption(config, k, String(val))
         } else if (switches.has(k) && !v) {
           handleSwitch(config, k)
         } else if (multivars.has(k)) {
-          handleMultivar(config, k, val)
+          handleMultivar(config, k, String(val))
         } else if (counts.has(k) && !v) {
           handleCount(config, k)
         } else if (switchInverts.has(k)) {
